@@ -1,0 +1,41 @@
+# Build artifacts and executables
+*.exe
+*.obj
+*.o
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+
+# Build directories
+build/
+dist/
+bin/
+obj/
+
+# Assembly-specific build files
+*.lst
+*.map
+*.sym
+
+# IDE and editor files
+.vscode/
+.vs/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS-specific files
+desktop.ini
+
+# Environment and configuration files (if containing sensitive data)
+# Uncomment if needed:
+# .env
+# local.config
+
+# Temporary files
+*.tmp
+*.temp
