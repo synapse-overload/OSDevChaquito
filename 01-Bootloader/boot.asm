@@ -17,7 +17,7 @@ BITS 16 ; tell the assembler we'll be using 16 bit REAL mode
 ;        onto screen
 ;   CX = number of times to write character
 .loop:
-    lodsb			; Load byte at DS:SI into AL, then increment SI
+    lodsb		; Load byte at DS:SI into AL, then increment SI
     cmp al, 0
     je .done
     mov ah, 0x09	; Write Character and Attribute (for color ;) )
