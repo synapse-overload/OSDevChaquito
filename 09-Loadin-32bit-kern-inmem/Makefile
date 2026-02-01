@@ -12,8 +12,14 @@ all: bin/boot.bin bin/kernel.bin
         of=bin/os.bin \
 		oflag=append \
         conv=notrunc,sync \
-        bs=512 \
-        count=100 # load 100 sectors just to be sure there's enough space =>51200 bytes sized kernel
+        bs=512 
+	# Get current size and calculate padding needed
+	@CURRENT_SIZE=$$(stat -c%s bin/os.bin); \
+	TARGET_SIZE=$$((101 * 512)); \
+	PADDING=$$((TARGET_SIZE - CURRENT_SIZE)); \
+	if [ $$PADDING -gt 0 ]; then \
+		dd if=/dev/zero of=bin/os.bin bs=1 count=$$PADDING oflag=append conv=notrunc 2>/dev/null; \
+	fi
 
 bin/kernel.bin: $(FILES)
 	i686-elf-ld -g -relocatable $(FILES) -o build/kernelfull.o

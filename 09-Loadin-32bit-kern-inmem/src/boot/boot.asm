@@ -24,6 +24,7 @@ step2:
 	mov ds, ax
 	mov es, ax
 	mov ss, ax
+  mov sp, 0x7c00
 	sti
 
 ; Switch from REAL mode to Protected mode
@@ -112,6 +113,7 @@ load32:
   mov ecx, 100 ; 100 sectors
   mov edi, 0x0100000 ; 1M size
   call ata_lba_read ; read logic block array
+  jmp CODE_SEG:0x0100000 ; jump to the code inside the kernel
   ; ATA documentation: https://wiki.osdev.org/ATA_PIO_Mode 
 
 ata_lba_read:
