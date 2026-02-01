@@ -1,18 +1,20 @@
 #!/bin/bash
+admin_prefix="sudo"
+[ "$(id -u)" == "0" ] && admin_prefix=''
 
-sudo apt install -y \
-  bison           `# Parser generator for compiler construction` 					\
-  flex            `# Lexical analyzer generator for tokenization` 				\
-  libgmp3-dev     `# Arbitrary precision integer arithmetic library`			\
-  libmpc-dev      `# Multiple precision complex number library`			 			\
-  libmpfr-dev     `# Multiple precision floating-point arithmetic library`\
-  texinfo         `# Documentation system for GCC manuals` 								\
-  libisl-dev      `# Polyhedral loop optimization framework library`      \
-	curl						`# Just added this for signature verification`
+#  Need the following dependencies for build
+#  bison           Parser generator for compiler construction)
+#  flex            Lexical analyzer generator for tokenization
+#  libgmp3-dev     Arbitrary precision integer arithmetic library
+#  libmpc-dev      Multiple precision complex number library
+#  libmpfr-dev     Multiple precision floating-point arithmetic library
+#  texinfo         Documentation system for GCC manuals
+#  libisl-dev      Polyhedral loop optimization framework library
+#  curl		   Just added this for signature verification
+$admin_prefix apt install -y bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo libisl-dev curl
 
-
-wget https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.xz 
-wget https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.xz.sig
+[ ! -f binutils-2.35.tar.xz ] && wget https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.xz 
+[ ! -f binutils-2.35.tar.xz.sig ] && wget https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.xz.sig
 
 KEY_ID=$(gpg --list-packets binutils-2.35.tar.xz.sig 2>/dev/null |
 	grep -oP 'keyid \K[0-9A-F]+')
@@ -30,8 +32,8 @@ if [ $? -ne 0 ]; then
 	echo "Invalid signature for downloaded binutils file, aborting..."
 	exit 1
 fi
-wget https://fosszone.csd.auth.gr/gnu/gcc/gcc-10.2.0/gcc-10.2.0.tar.gz
-wget https://fosszone.csd.auth.gr/gnu/gcc/gcc-10.2.0/gcc-10.2.0.tar.gz.sig
+[ ! -f gcc-10.2.0.tar.gz ] && wget https://fosszone.csd.auth.gr/gnu/gcc/gcc-10.2.0/gcc-10.2.0.tar.gz
+[ ! -f gcc-10.2.0.tar.gz.sig ] && wget https://fosszone.csd.auth.gr/gnu/gcc/gcc-10.2.0/gcc-10.2.0.tar.gz.sig
 
 KEY_ID=$(gpg --list-packets gcc-10.2.0.tar.gz.sig \
 	2>/dev/null | grep -oP 'keyid \K[0-9A-F]+')
@@ -47,7 +49,5 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-tar zxf gcc-10.2.0.tar.gz
-tar Jxf binutils-2.35.tar.xz 
-
-mv binutils-2.35 src/
+tar zxf gcc-10.2.0.tar.gz -C src
+tar Jxf binutils-2.35.tar.xz -C src
