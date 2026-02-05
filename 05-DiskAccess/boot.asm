@@ -1,3 +1,4 @@
+; vim: ts=2 sts=2 sw=2 et
 ORG   0 ; origin set to 0
 BITS 16
 _start:
@@ -35,7 +36,7 @@ step2:
 	mov ss, ax     ;          |
 	mov sp, 0x7c00 ;          |
 	sti ;                     +___________________________________________
-                     ;                                                        \
+                ;                                                         \
 	mov ah, 0x02 ; READ SECTOR COMMAND                                     \
 	mov al, 0x01 ; READ ONE SECTOR                                          \
 	mov ch, 0x00 ; Cyld low eight bits                                       \
