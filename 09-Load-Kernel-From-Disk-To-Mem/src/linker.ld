@@ -16,34 +16,38 @@ OUTPUT_FORMAT(binary) /* this is a binary format even though we define the
 			 kernel as ELF */
 SECTIONS
 {
-	. = 1M; /* 1048576  - this will be the address where the kernel will 
+	. = 1M; /* 1048576  - this will be the address where the kernel will
 		         be loaded */
 	/*
-	* Why 1MB? This is a standard kernel loading address - the first 1MB 
-	* of memory contains BIOS data, real-mode code, and other legacy 
+	* Why 1MB? This is a standard kernel loading address - the first 1MB
+	* of memory contains BIOS data, real-mode code, and other legacy
 	* structures that you want to avoid
 	*
 	* NOTE: The location counter is automatically increased after .
 	*
 	*/
-	.text :
+
+	.text : ALIGN(4096) /* it's important to not have
+						 * the colon attached to the section name
+						 */
 	{
-		*(.text) /*  The asterisk * means "from all input files", and 
+		*(.text) /*  The asterisk * means "from all input files", and
 		  	      *   (.text) means "take their .text sections"
+				  *   the input files are object files
 		          */
 	}
 
-	.rodata :
+	.rodata : ALIGN(4096)
 	{
 		*(.rodata)
 	}
 
-	.data :
+	.data : ALIGN(4096)
 	{
 		*(.data)
 	}
 
-	.bss : /* block started by symbol */
+	.bss : ALIGN(4096) /* block started by symbol */
 	{
 		*(COMMON) /* variables declared without static in C, passing -fno-common is something we CAN do */
 		*(.bss) /* Standard uninitialized variables */

@@ -74,7 +74,7 @@ gdt_code:   ; CS (code segment) should point here
   ;								    - 1 - can be exec'ed from lower priv level
   ;										- 0 - can be exec'ed only from code at priv in Privl bits
   ; [1] RW          - readable/writeable bit (read access for code seg, etc)
-  ;										 - for code seg 0=read not allowed, write is nnever allow
+  ;										 - for code seg 0=read not allowed, write is never allowd
   ;										 - for data seg bit means write access, 0=false
   ; [0] Ac				  - accessed bit - set to 0, the CPU will set to 1 if access
   ; FLAGS

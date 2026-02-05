@@ -28,35 +28,35 @@ DATA_SEG equ 0x10
 
 global _start ; exports the _start symbol for the linker
 
+; section .asm ; we can't define this section for separate linkage because
+               ; the kernel needs to be in the text section
+                
 _start:
-	; Initialize all segment registers to point to the kernel data segment
-	; In protected mode, segment registers hold selectors (not base addresses)
-	; All segments (ds, es, fs, gs, ss) point to the same flat data segment
-	mov ax, DATA_SEG
-	mov ds, ax  ; data segment
-	mov es, ax  ; extra segment
-	mov fs, ax  ; general purpose segment
-	mov gs, ax  ; general purpose segment
-	mov ss, ax  ; stack segment
-
-	; Set up the stack at 2MB mark in memory (0x00200000)
-	; Stack grows downward from this address
-	mov ebp, 0x00200000 ; set base pointer (stack frame base)
-	mov esp, ebp        ; set stack pointer (top of stack)
-
-	; Enable the A20 line via Fast A20 Gate (port 0x92)
-	; The A20 line must be enabled to access memory above 1MB
-	; Without this, address line 20 wraps around (legacy 8086 behavior) =>
-	; broken 32bit addressing because A20 is going to be 0 always
-	in al, 0x92         ; read from system control port A
-	or al, 2            ; set bit 1 (A20 enable bit)
-	out 0x92, al        ; write back to enable A20
-
-	; TODO: Kernel initialization continues here
-	; - Set up interrupt handlers (IDT)
-	; - Initialize drivers
-	; - Jump to kernel main function
-
+  ; Initialize all segment registers to point to the kernel data segment
+  ; In protected mode, segment registers hold selectors (not base addresses)
+  ; All segments (ds, es, fs, gs, ss) point to the same flat data segment
+  mov ax, DATA_SEG
+  mov ds, ax  ; data segment
+  mov es, ax  ; extra segment
+  mov fs, ax  ; general purpose segment
+  mov gs, ax  ; general purpose segment
+  mov ss, ax  ; stack segment
+  ; Set up the stack at 2MB mark in memory (0x00200000)
+  ; Stack grows downward from this address
+  mov ebp, 0x00200000 ; set base pointer (stack frame base)
+  mov esp, ebp        ; set stack pointer (top of stack)
+  ; Enable the A20 line via Fast A20 Gate (port 0x92)
+  ; The A20 line must be enabled to access memory above 1MB
+  ; Without this, address line 20 wraps around (legacy 8086 behavior) =>
+  ; broken 32bit addressing because A20 is going to be 0 always
+  in al, 0x92         ; read from system control port A
+  or al, 2            ; set bit 1 (A20 enable bit)
+  out 0x92, al        ; write back to enable A20
+  ; TODO: Kernel initialization continues here
+  ; - Set up interrupt handlers (IDT)
+  ; - Initialize drivers
+  ; - Jump to kernel main function
+  times 512-($-$$) db 0 ; make this section exactly 512 bytes
 
 
 

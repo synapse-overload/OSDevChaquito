@@ -118,6 +118,14 @@ When reading from port 0x1F7, you get the drive status:
 7. **Memory layout**: Understanding PC memory map
 8. **A20 line**: Hardware requirement for >1MB addressing
 
+## Troubleshooting
+When trying to add the kernel.asm code in a new section called .asm
+I noticed that I can't run that code because it's not in the text
+section that is set by the linker file right at the end of the 
+1M slack. The .asm region would probably not have a section 
+descriptor for it and this is why it's not defined as code. In order
+to define a segment as code, check out how gdt_code is created in lab6.
+
 ## Build and Run
 
 ```bash
