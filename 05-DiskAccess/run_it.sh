@@ -1,3 +1,3 @@
 #!/bin/bash
 
-qemu-system-x86_64 -hda ./boot.bin -nographic
+qemu-system-i386 -hda ./boot.bin -nographic
