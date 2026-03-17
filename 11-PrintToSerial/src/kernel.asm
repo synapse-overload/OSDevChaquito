@@ -53,12 +53,15 @@ _start:
   in al, 0x92         ; read from system control port A
   or al, 2            ; set bit 1 (A20 enable bit)
   out 0x92, al        ; write back to enable A20
-  call kernel_main    ; call the kernel main function (in C!)
-  jmp $ ; run infinite loop
-  ; TODO: Kernel initialization continues here
+
+  ; Jump to kernel main function (never returns)
+  ; Using jmp instead of call because kernel should never return
+  jmp kernel_main
+
+  ; TODO: Future kernel initialization
   ; - Set up interrupt handlers (IDT)
   ; - Initialize drivers
-  ; - Jump to kernel main function
+  ; - Additional kernel services
   times 512-($-$$) db 0 ; make this section exactly 512 bytes
 
 

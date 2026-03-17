@@ -48,6 +48,6 @@ if [ $? -ne 0 ]; then
 	echo "Invalid signature for downloaded gcc file, aborting..."
 	exit 1
 fi
-
+mkdir src
 tar zxf gcc-10.2.0.tar.gz -C src
 tar Jxf binutils-2.35.tar.xz -C src

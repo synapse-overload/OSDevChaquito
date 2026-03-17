@@ -7,8 +7,8 @@ export PATH="$PREFIX/bin:$PATH"
 
 which -- $TARGET-as || echo $TARGET-as is not in the path
 
-mkdir build-gcc
-cd build-gcc
+mkdir src/build-gcc
+cd src/build-gcc
 ../gcc-10.2.0/configure --target=$TARGET --prefix="$PREFIX" --disable-nls \
   --enable-languages=c,c++ --without-headers
 

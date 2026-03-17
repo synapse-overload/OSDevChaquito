@@ -1,6 +1,6 @@
 # vim: ts=4 sw=4 sts=4
-FILES = build/kernel.asm.o build/kernel.o
-INCLUDES = -I ./src
+FILES = build/kernel.asm.o build/kernel.o build/serial_comm.o build/io.o
+INCLUDES = -I./src -I./src/io
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels \
         -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions \
 		-Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp \
@@ -29,7 +29,7 @@ all: bin/boot.bin bin/kernel.bin
 
 bin/kernel.bin: $(FILES)
 	i686-elf-ld -g -relocatable $(FILES) -o build/kernelfull.o
-	i686-elf-gcc $(FLAGS) -T src/linker.ld -o bin/kernel.bin build/kernelfull.o
+	i686-elf-gcc $(FLAGS) -T src/linker.ld -o bin/kernel.bin -ffreestanding -O0 -nostdlib build/kernelfull.o
 
 bin/boot.bin: src/boot/boot.asm
 	[ -d bin ] || mkdir bin 
@@ -42,6 +42,12 @@ build/kernel.asm.o: src/kernel.asm
 
 build/kernel.o: src/kernel.c
 	i686-elf-gcc $(INCLUDES) $(FLAGS) -std=gnu99 -c ./src/kernel.c -o ./build/kernel.o
+
+build/serial_comm.o: src/io/serial_comm.c
+	i686-elf-gcc $(INCLUDES) $(FLAGS) -std=gnu99 -c ./src/io/serial_comm.c -o ./build/serial_comm.o
+
+build/io.o: src/io/io.asm
+	nasm -f elf -g -o build/io.o src/io/io.asm
 
 .PHONY: clean
 clean:

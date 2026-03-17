@@ -39,3 +39,5 @@ desktop.ini
 # Temporary files
 *.tmp
 *.temp
+08-Cross-Compiler/*.tar.*
+08-Cross-Compiler/src/**
