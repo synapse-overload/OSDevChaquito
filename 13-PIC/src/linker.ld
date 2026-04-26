@@ -31,6 +31,7 @@ SECTIONS
 						 * the colon attached to the section name
 						 */
 	{
+		*(start.first) /* _start entry point — must land at 0x100000 */
 		*(.text) /*  The asterisk * means "from all input files", and
 		  	      *   (.text) means "take their .text sections"
 				  *   the input files are object files

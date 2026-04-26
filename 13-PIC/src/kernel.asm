@@ -29,6 +29,7 @@ DATA_SEG equ 0x10
 global _start ; exports the _start symbol for the linker
 extern kernel_main
 
+section start.first
 _start:
   ; Initialize all segment registers to point to the kernel data segment
   ; In protected mode, segment registers hold selectors (not base addresses)
@@ -61,44 +62,5 @@ _start:
   ; - Additional kernel services
   times 512-($-$$) db 0 ; make this section exactly 512 bytes
 
-; expect struct {
-;   char manufacturer[13]; // 0 string
-global cpuid
-cpuid:
-  ; put request for manufacturer string in eax
-  mov eax, 0
-  cpuid
-  mov [esp + 4], ebx
-  mov [esp + 8], edx
-  mov [esp + 12], ecx
-  mov BYTE [esp + 13], 0x0
-  ret
   
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -131,7 +131,7 @@ gdt_code:   ; CS (code segment) should point here
 	;   - Gr          - granularity bit, 0=1B gran, 1=4KiB gran
 	;   - Sz				  - size bit, selector defines 16 bit protected mode if 0,
 	;									  32bit protected seg
-	; 0x9a - means 10011010 => Pr,Ring0,Code,Exec,Up,Write?,Ac=0
+	; 0x9a - means 10011010 => Pr,Ring0,Code,Exec,Up,Readable,Ac=0
 	db 0x9a		; Access byte
 	; LIMIT and FLAGS, setting limit 4 bits to 1 all
 	db 11001111b ; Gr=1=>4KiB gran, sz=1=>32bit protected seg
