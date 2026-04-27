@@ -44,22 +44,11 @@ _start:
   ; Stack grows downward from this address
   mov ebp, 0x00200000 ; set base pointer (stack frame base)
   mov esp, ebp        ; set stack pointer (top of stack)
-  ; Enable the A20 line via Fast A20 Gate (port 0x92)
-  ; The A20 line must be enabled to access memory above 1MB
-  ; Without this, address line 20 wraps around (legacy 8086 behavior) =>
-  ; broken 32bit addressing because A20 is going to be 0 always
-  in al, 0x92         ; read from system control port A
-  or al, 2            ; set bit 1 (A20 enable bit)
-  out 0x92, al        ; write back to enable A20
 
   ; Jump to kernel main function (never returns)
   ; Using jmp instead of call because kernel should never return
   jmp kernel_main
 
-  ; TODO: Future kernel initialization
-  ; - Set up interrupt handlers (IDT)
-  ; - Initialize drivers
-  ; - Additional kernel services
   times 512-($-$$) db 0 ; make this section exactly 512 bytes
 
   

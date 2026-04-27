@@ -1,5 +1,6 @@
 add_library(shared OBJECT
     memory.c
+    os_string.c
     cpuid.asm
 )
 

@@ -60,6 +60,14 @@ step2:
 
 	sti ; Re-enable interrupts (safe now that segments/stack are set up)
 
+	; Enable the A20 line via Fast A20 Gate (port 0x92)
+	; The A20 line must be enabled to access memory above 1MB
+	; Without this, address line 20 wraps around (legacy 8086 behavior) =>
+	; broken 32bit addressing because A20 is going to be 0 always
+	in al, 0x92         ; read from system control port A
+	or al, 2            ; set bit 1 (A20 enable bit)
+	out 0x92, al        ; write back to enable A20
+
 ; Transition from Real Mode to Protected Mode
 .load_protected: ; Local label anchored to step2
 	cli ; Disable interrupts during mode switch (critical!)
@@ -116,21 +124,21 @@ gdt_code:   ; CS (code segment) should point here
 	; [7]   present bit - this must be 1 for all valid selectors (some can be dis)
 	; [6:5] Priv1       - privilege, 2 bits (i.e. ring 0, 1 .. 3)
 	; [4]   S           - descriptor type (1 for code seg, 0 all else)
-	; [3]   Ex					- executable bit (if 1 => code, if 0 not exec)
-	; [2]   DC				  - direction bit/conforming bit
-	;									  - 0 = seg grows up
-	;                   - 1 = seg grows down
-	;									- if it's a conforming bit:
-	;								    - 1 - can be exec'ed from lower priv level
-	;										- 0 - can be exec'ed only from code at priv in Privl bits
+	; [3]   Ex			- executable bit (if 1 => code, if 0 not exec)
+	; [2]   DC			- direction bit/conforming bit
+	;						- 0 = seg grows up
+	;                   	- 1 = seg grows down
+	;						- if it's a conforming bit:
+	;					  		- 1 - can be exec'ed from lower priv level
+	;							- 0 - can be exec'ed only from code at priv in Privl bits
 	; [1] RW          - readable/writeable bit (read access for code seg, etc)
-	;										 - for code seg 0=read not allowed, write is nnever allow
-	;										 - for data seg bit means write access, 0=false
-	; [0] Ac				  - accessed bit - set to 0, the CPU will set to 1 if access
+	;							- for code seg 0=read not allowed, write is nnever allow
+	;							- for data seg bit means write access, 0=false
+	; [0] Ac		  - accessed bit - set to 0, the CPU will set to 1 if access
 	; FLAGS
 	;   - Gr          - granularity bit, 0=1B gran, 1=4KiB gran
-	;   - Sz				  - size bit, selector defines 16 bit protected mode if 0,
-	;									  32bit protected seg
+	;   - Sz		  - size bit, selector defines 16 bit protected mode if 0,
+	;					32bit protected seg
 	; 0x9a - means 10011010 => Pr,Ring0,Code,Exec,Up,Readable,Ac=0
 	db 0x9a		; Access byte
 	; LIMIT and FLAGS, setting limit 4 bits to 1 all
