@@ -103,7 +103,9 @@ install_debian_packages() {
     make \
     gcc \
     g++ \
-    build-essential
+    build-essential \
+    universal-ctags \
+    jq
 
   print_info "Installing cross-compiler build dependencies..."
   sudo apt install -y \
@@ -128,7 +130,9 @@ install_fedora_packages() {
     gdb \
     make \
     gcc \
-    gcc-c++
+    gcc-c++ \
+    universal-ctags \
+    jq
 
   print_info "Installing cross-compiler build dependencies..."
   sudo dnf install -y \
@@ -153,7 +157,9 @@ install_rhel_packages() {
     gdb \
     make \
     gcc \
-    gcc-c++
+    gcc-c++ \
+    universal-ctags \
+    jq
 
   print_info "Installing cross-compiler build dependencies..."
 

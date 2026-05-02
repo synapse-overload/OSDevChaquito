@@ -1,0 +1,96 @@
+#ifndef __CPUID_H__
+#define __CPUID_H__
+
+#include <stdint.h>
+
+void cpuid_query(uint32_t leaf, uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx);
+
+
+typedef struct { uint32_t family; uint32_t model; const char *name; } cpu_info_entry_t;
+
+static const cpu_info_entry_t cpu_info_table[] = {
+  /* Family 5 — Pentium */
+  { 5, 0x01, "Pentium (P5)" },
+  { 5, 0x02, "Pentium (P54C)" },
+  { 5, 0x04, "Pentium MMX" },
+  { 5, 0x07, "Mobile Pentium" },
+  { 5, 0x08, "Mobile Pentium MMX" },
+  /* Family 6 — P6 through modern Core */
+  { 6, 0x01, "Pentium Pro" },
+  { 6, 0x03, "Pentium II (Klamath)" },
+  { 6, 0x05, "Pentium II (Deschutes)" },
+  { 6, 0x06, "Pentium II (Dixon) / Celeron (Mendocino)" },
+  { 6, 0x07, "Pentium III (Katmai)" },
+  { 6, 0x08, "Pentium III (Coppermine)" },
+  { 6, 0x09, "Pentium M (Banias)" },
+  { 6, 0x0A, "Pentium III Xeon (Cascades)" },
+  { 6, 0x0B, "Pentium III (Tualatin)" },
+  { 6, 0x0D, "Pentium M (Dothan)" },
+  { 6, 0x0E, "Intel Core (Yonah)" },
+  { 6, 0x0F, "Intel Core 2 (Merom / Conroe)" },
+  { 6, 0x16, "Intel Core 2 (Merom-L)" },
+  { 6, 0x17, "Intel Core 2 (Penryn / Wolfdale)" },
+  { 6, 0x1A, "Intel Core i7 (Nehalem / Bloomfield)" },
+  { 6, 0x1C, "Intel Atom (Bonnell)" },
+  { 6, 0x1D, "Intel Xeon (Dunnington)" },
+  { 6, 0x1E, "Intel Core i5/i7 (Nehalem / Lynnfield)" },
+  { 6, 0x25, "Intel Core i3/i5/i7 (Westmere)" },
+  { 6, 0x26, "Intel Atom (Lincroft)" },
+  { 6, 0x2A, "Intel Core 2nd Gen (Sandy Bridge)" },
+  { 6, 0x2C, "Intel Core i7 (Westmere-EP)" },
+  { 6, 0x2D, "Intel Core i7 (Sandy Bridge-E)" },
+  { 6, 0x2E, "Intel Xeon (Nehalem-EX)" },
+  { 6, 0x2F, "Intel Xeon (Westmere-EX)" },
+  { 6, 0x37, "Intel Atom (Bay Trail)" },
+  { 6, 0x3A, "Intel Core 3rd Gen (Ivy Bridge)" },
+  { 6, 0x3C, "Intel Core 4th Gen (Haswell)" },
+  { 6, 0x3D, "Intel Core 5th Gen (Broadwell)" },
+  { 6, 0x3E, "Intel Core i7 (Ivy Bridge-E)" },
+  { 6, 0x3F, "Intel Core 4th Gen (Haswell-E)" },
+  { 6, 0x45, "Intel Core 4th Gen (Haswell-ULT)" },
+  { 6, 0x46, "Intel Core 4th Gen (Crystal Well)" },
+  { 6, 0x47, "Intel Core 5th Gen (Broadwell-H)" },
+  { 6, 0x4C, "Intel Atom (Cherry Trail / Braswell)" },
+  { 6, 0x4D, "Intel Atom (Avoton / Rangeley)" },
+  { 6, 0x4E, "Intel Core 6th Gen (Skylake-U/Y)" },
+  { 6, 0x55, "Intel Xeon (Skylake-SP / Cascade Lake / Cooper Lake)" },
+  { 6, 0x56, "Intel Xeon (Broadwell-DE)" },
+  { 6, 0x5C, "Intel Atom (Goldmont / Apollo Lake)" },
+  { 6, 0x5E, "Intel Core 6th Gen (Skylake-H/S)" },
+  { 6, 0x5F, "Intel Atom (Denverton)" },
+  { 6, 0x66, "Intel Core (Cannon Lake)" },
+  { 6, 0x6A, "Intel Xeon (Ice Lake-SP)" },
+  { 6, 0x7A, "Intel Atom (Gemini Lake)" },
+  { 6, 0x7D, "Intel Core 10th Gen (Ice Lake)" },
+  { 6, 0x7E, "Intel Core 10th Gen (Ice Lake-U/Y)" },
+  { 6, 0x86, "Intel Atom (Tremont / Jacobsville)" },
+  { 6, 0x8A, "Intel Core (Lakefield)" },
+  { 6, 0x8C, "Intel Core 11th Gen (Tiger Lake-U)" },
+  { 6, 0x8D, "Intel Core 11th Gen (Tiger Lake-H)" },
+  { 6, 0x8E, "Intel Core 7th-10th Gen (Kaby / Coffee / Whiskey Lake)" },
+  { 6, 0x96, "Intel Atom (Elkhart Lake)" },
+  { 6, 0x97, "Intel Core 12th Gen (Alder Lake-S)" },
+  { 6, 0x9A, "Intel Core 12th Gen (Alder Lake-P/H)" },
+  { 6, 0x9C, "Intel Atom (Jasper Lake)" },
+  { 6, 0x9E, "Intel Core 7th/8th Gen (Kaby Lake / Coffee Lake)" },
+  { 6, 0xA5, "Intel Core 10th Gen (Comet Lake-S/H)" },
+  { 6, 0xA6, "Intel Core 10th Gen (Comet Lake-U)" },
+  { 6, 0xA7, "Intel Core 11th Gen (Rocket Lake-S)" },
+  { 6, 0xAA, "Intel Core Ultra 1st Gen (Meteor Lake-M/U)" },
+  { 6, 0xAC, "Intel Core Ultra 1st Gen (Meteor Lake-H)" },
+  { 6, 0xB7, "Intel Core 13th/14th Gen (Raptor Lake-S)" },
+  { 6, 0xBA, "Intel Core 13th/14th Gen (Raptor Lake-P/H)" },
+  { 6, 0xBE, "Intel Core 12th Gen (Alder Lake-N)" },
+  { 6, 0xC5, "Intel Core Ultra 2nd Gen (Arrow Lake-H)" },
+  { 6, 0xC6, "Intel Core Ultra 2nd Gen (Arrow Lake-S)" },
+  /* Family 15 — Pentium 4 / NetBurst */
+  { 15, 0x00, "Pentium 4 (Willamette)" },
+  { 15, 0x01, "Pentium 4 (Willamette)" },
+  { 15, 0x02, "Pentium 4 (Northwood)" },
+  { 15, 0x03, "Pentium 4 (Prescott)" },
+  { 15, 0x04, "Pentium 4 (Prescott-2M)" },
+  { 15, 0x06, "Pentium 4 (Cedar Mill)" },
+  { 0, 0, 0 }
+};
+
+#endif

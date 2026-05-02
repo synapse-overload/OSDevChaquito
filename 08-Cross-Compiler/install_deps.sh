@@ -1,4 +1,5 @@
 #!/bin/bash
+
 admin_prefix="sudo"
 [ "$(id -u)" == "0" ] && admin_prefix=''
 
@@ -11,10 +12,41 @@ admin_prefix="sudo"
 #  texinfo         Documentation system for GCC manuals
 #  libisl-dev      Polyhedral loop optimization framework library
 #  curl		   Just added this for signature verification
-$admin_prefix apt install -y bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo libisl-dev curl
 
-[ ! -f binutils-2.35.tar.xz ] && wget https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.xz 
-[ ! -f binutils-2.35.tar.xz.sig ] && wget https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.xz.sig
+ubuntu_pkgs="bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo libisl-dev curl"
+fedora_pkgs="bison flex gmp-devel libmpc-devel mpfr-devel texinfo isl-devel curl"
+install_cmd="apt install -y"
+pkgs=$ubuntu_pkgs
+os_release=$(cat /etc/os-release | grep -E "^ID=.*$" | cut -d= -f2 | tr '[:upper:]' '[:lower:]')
+skip_install=0
+
+if [ "$os_release" == "fedora" ]; then
+	install_cmd="dnf install -y"
+	pkgs=$fedora_pkgs
+elif [ "$os_release" != "ubuntu" ]; then
+	echo "The linux flavor you're using is not supported by this script, please install the" 1>&2
+	echo "equivalents of the following ubuntu packages:" 1>&2
+	echo "$ubuntu_pkgs" 1>&2
+
+	read -rp "Do you want to continue without installing pkgs? [Y/n] " reply
+	reply="${reply:-y}"  # default to 'y' if empty
+	reply=$(echo $reply | tr '[:upper:]' '[:lower:]')
+
+	if [ "$reply" != "y" ]; then
+		echo "Aborting..." 1>&2
+		exit 1
+	else
+		skip_install=1
+	fi
+fi
+
+if [ $skip_install -eq 0 ]; then
+	install_cmd="$admin_prefix $install_cmd"
+
+	$install_cmd $pkgs 
+	[ ! -f binutils-2.35.tar.xz ] && wget https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.xz 
+	[ ! -f binutils-2.35.tar.xz.sig ] && wget https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.xz.sig
+fi
 
 KEY_ID=$(gpg --list-packets binutils-2.35.tar.xz.sig 2>/dev/null |
 	grep -oP 'keyid \K[0-9A-F]+')

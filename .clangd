@@ -1,0 +1,35 @@
+# Project-wide clangd configuration for all lab subprojects.
+# Targets i686 freestanding (bare-metal / OS-dev) environment.
+
+CompileFlags:
+  Add:
+    - -std=c11
+    - -ffreestanding
+    - -m32
+    - -march=i686
+    - -O2
+    - -Wall
+    - -Wextra
+    - -I.
+  Compiler: gcc
+
+Index:
+  Background: Build
+  StandardLibrary: No
+
+Diagnostics:
+  Suppress:
+    - -Wmain
+  ClangTidy:
+    Add:
+      - bugprone-*
+      - misc-*
+      - readability-*
+    Remove:
+      - readability-magic-numbers
+      - misc-no-recursion
+
+InlayHints:
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes
