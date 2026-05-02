@@ -1,9 +1,9 @@
 add_subdirectory(shared)
 add_subdirectory(boot)
 add_subdirectory(io)
-add_subdirectory(idt)
+add_subdirectory(interrupt)
 
-add_library(kernel_objects OBJECT
+add_library(kernel OBJECT
     kernel.c
     kernel.asm
 )
@@ -17,8 +17,8 @@ set_source_files_properties(kernel.c PROPERTIES LANGUAGE C COMPILE_FLAGS "-Wno-d
 
 # io_objects declares PUBLIC include dirs, so they propagate here automatically.
 # Only add kernel src itself for kernel-private headers.
-target_include_directories(kernel_objects PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(kernel_objects PRIVATE io_objects idt_objects shared)
+target_include_directories(kernel PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(kernel PRIVATE io interrupt shared)
 
 # Convert CMAKE_C_FLAGS into a list so custom command gets separate args instead of one big quoted option
 separate_arguments(CMAKE_C_FLAGS_LIST UNIX_COMMAND "${CMAKE_C_FLAGS}")
@@ -28,8 +28,8 @@ set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/linker.ld)
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kernelfull.o
     COMMAND_EXPAND_LISTS
-    COMMAND ${CMAKE_LINKER} -relocatable -o ${CMAKE_CURRENT_BINARY_DIR}/kernelfull.o $<TARGET_OBJECTS:kernel_objects> $<TARGET_OBJECTS:io_objects> $<TARGET_OBJECTS:idt_objects> $<TARGET_OBJECTS:shared>
-    DEPENDS kernel_objects io_objects idt_objects shared
+    COMMAND ${CMAKE_LINKER} -relocatable -o ${CMAKE_CURRENT_BINARY_DIR}/kernelfull.o $<TARGET_OBJECTS:kernel> $<TARGET_OBJECTS:io> $<TARGET_OBJECTS:interrupt> $<TARGET_OBJECTS:shared>
+    DEPENDS kernel io interrupt shared
     COMMENT "Linking relocatable kernelfull.o for debug symbols"
 )
 

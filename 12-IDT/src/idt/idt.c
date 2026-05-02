@@ -50,6 +50,6 @@ void idt_setup(void) {
     );
     
     load_idtr(&idt_ptr);
-    mask_all_interrupts_except_0();
+    mask_all_pic_interrupts();
     enable_interrupts();
 }

@@ -14,8 +14,8 @@ load_idtr:
 ; then I don't need to manage the frame pointer or save/restore those registers
 ; we could've done this for load_idtr as well, since esp would just point at 
 ; the return address
-global mask_all_interrupts_except_0
-mask_all_interrupts_except_0:
+global mask_all_pic_interrupts
+mask_all_pic_interrupts:
     mov al, 0xFF        ; mask all interrupts
     out 0x21, al        ; write to PIC1 data port
     out 0xA1, al        ; write to PIC2 data port

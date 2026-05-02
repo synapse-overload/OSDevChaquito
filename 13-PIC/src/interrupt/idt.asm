@@ -1,3 +1,5 @@
+[BITS 32]
+
 global load_idtr
 load_idtr:
     push ebp
@@ -14,9 +16,9 @@ load_idtr:
 ; then I don't need to manage the frame pointer or save/restore those registers
 ; we could've done this for load_idtr as well, since esp would just point at 
 ; the return address
-global mask_all_interrupts_except_0
-mask_all_interrupts_except_0:
-    mov al, 0xFF        ; mask all interrupts
+global mask_all_pic_interrupts_except_kbd
+mask_all_pic_interrupts_except_kbd:
+    mov al, 0xFD        ; mask all interrupts except keyboard
     out 0x21, al        ; write to PIC1 data port
     out 0xA1, al        ; write to PIC2 data port
     ret
@@ -29,7 +31,9 @@ enable_interrupts:
 extern printk
 
 section .rodata
-    isr_message db "Interrupt occurred\n", 0
+    isr_message db "Interrupt occurred", 0
+    kbd_message db "Keyboard interrupt received", 0
+    uart_message db "UART byte received: ", 0
 
 global isr_generic
 isr_generic:
@@ -52,12 +56,33 @@ isr_generic:
     pop ebp
     iret
 
-global make_interrupt_handler
-make_interrupt_handler:
-    push ebp
-    mov ebp, esp
-    mov eax, [ebp + 8]  ; get function pointer argument
-    call eax            ; call the interrupt handler function
-    pop ebp
-    iret                ; return from interrupt
+
+global kbd_interrupt_handler
+kbd_interrupt_handler:
+    cli
+    pushad
+    in al, 0x60          ; drain PS/2 output buffer, re-arms IRQ1
+    lea eax, [rel kbd_message]
+    push eax
+    call printk
+    add esp, 4
+    mov al, 0x20
+    out 0x20, al
+    popad
+    iret
+
+global uart_interrupt_handler
+uart_interrupt_handler:
+    cli
+    pushad
+    mov dx, 0x3F8
+    in al, dx            ; drain UART receive register, de-asserts IRQ4
+    lea eax, [rel uart_message]
+    push eax
+    call printk
+    add esp, 4
+    mov al, 0x20
+    out 0x20, al         ; EOI to Master PIC
+    popad
+    iret
 

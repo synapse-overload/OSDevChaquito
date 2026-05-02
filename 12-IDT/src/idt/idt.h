@@ -45,7 +45,7 @@ void idt_setup(void);
 // this funciton is defined in idt.asm
 void load_idtr(struct idt_ptr_t* idt_ptr);
 
-void mask_all_interrupts_except_0(void);
+void mask_all_pic_interrupts(void);
 void enable_interrupts(void);
 
 #endif

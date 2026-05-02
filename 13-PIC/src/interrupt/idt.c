@@ -2,6 +2,7 @@
 #include "io.h"
 #include "config.h"
 #include "serial_comm.h"
+#include "pic.h"
 
 struct idt_entry_t idt_descriptors[TOTAL_INTERRUPTS];
 struct idt_ptr_t idt_ptr;
@@ -41,15 +42,43 @@ void idt_setup(void) {
         0,
         (uint32_t)divide_by_zero_handler,
         KERNEL_CODE_SEGMENT_SELECTOR, 
-        (type_attr_t){.bits = {
-            .gate_type = GATE_TYPE_INTERRUPT, 
-            .zero_bit = 0,
-            .dpl = 3,
-            .present = 1
-        }}
+        (type_attr_t){
+            .bits = {
+                .gate_type = GATE_TYPE_INTERRUPT, 
+                .zero_bit = 0,
+                .dpl = 3,
+                .present = 1
+            }
+        }
     );
     
+    idt_set_gate(KEYBOARD_INTERRUPT_VECTOR, (uint32_t)kbd_interrupt_handler,
+        KERNEL_CODE_SEGMENT_SELECTOR,
+        (type_attr_t){
+            .bits = {
+                .gate_type = GATE_TYPE_INTERRUPT,
+                .zero_bit = 0,
+                .dpl = 3,
+                .present = 1
+            }
+        }
+    );
+
+    idt_set_gate(UART0_INTERRUPT_VECTOR, (uint32_t)uart_interrupt_handler,
+        KERNEL_CODE_SEGMENT_SELECTOR,
+        (type_attr_t){
+            .bits = {
+                .gate_type = GATE_TYPE_INTERRUPT,
+                .zero_bit = 0,
+                .dpl = 3,
+                .present = 1
+            }
+        }
+    );
+
+    
     load_idtr(&idt_ptr);
-    mask_all_interrupts_except_0();
+    remap_master_pic();
+    outb(SERIAL_INT_ENABLE, 0x01);   // enable UART RX-ready interrupt → IRQ4
     enable_interrupts();
 }

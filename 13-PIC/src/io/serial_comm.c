@@ -17,8 +17,8 @@ void serial_init(void) {
     // 8 bits, no parity, one stop bit (disable DLAB)
     outb(SERIAL_LINE_CTRL, 0x03);
 
-    // Enable FIFO, clear them, with 14-byte threshold
-    outb(SERIAL_INT_ID_FIFO_CTRL, 0xC7);
+    // Enable FIFO, clear them, with 1-byte threshold
+    outb(SERIAL_INT_ID_FIFO_CTRL, 0x07);
 
     // RTS (Request To Send): when asserted, the UART tells the far end 
     //   “I’m ready to receive data” (it is requesting permission to receive).
