@@ -143,6 +143,14 @@ no further interrupts are delivered regardless of how many bytes arrive. Reading
 the received byte from `0x3F8` as the first action in the handler clears the
 UART's interrupt condition and restores normal operation.
 
+**How the handler prints the received byte without a scratch buffer.** After
+`in al, dx` the character is in `al`. `movzx eax, al` zero-extends it into
+`eax`, clearing the upper 24 bits. `or eax, 0x00000A00` then places `0x0A`
+(newline) into byte 1 while bytes 2–3 remain zero from the `movzx`. The pushed
+dword sits in memory as `[char, '\n', 0x00, 0x00]` — a valid two-character
+null-terminated string. `mov eax, esp` passes a pointer to that stack location
+to `printk`. The stack itself is the buffer; no separate allocation needed.
+
 ### Transmission parameters
 
 When you configure minicom or picocom to talk to a Raspberry Pi over a CP2102
@@ -255,7 +263,7 @@ first in the binary output after the 1MB mark. In order to find out that the
 000004a0 T serial_init
 000002a0 T _start  
 ```
-`_start` should be at `CODE_SEG:0x0100000` as per `boot.asm:194`
+`_start` should be at `CODE_SEG:0x0100000` as per `boot.asm:202`
 now the new linker script that places the start.first section first will place
 the `_start` symbol right at that first section that starts after 1MB.
 ```bash
@@ -319,3 +327,4 @@ alignment is no longer required for our binary. This would cause extra
 instructions to be generated to align the stack to 16 bytes, which is overkill.
 Since it's a 32-bit operating system 4 bytes are enough, the value of the param
 is meant as a power of 2.
+

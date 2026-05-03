@@ -76,12 +76,10 @@ uart_interrupt_handler:
     cli
     pushad
     mov dx, 0x3F8
-    in al, dx;          ; drain UART receive register, de-asserts IRQ4
-    movzx eax, al       ; zero-extend the byte to print it as a number
-    mov ebx, 10
-    shl ebx, 8
-    xor eax, ebx
-    push eax            ; save the received byte for printing
+    in al, dx           ; drain UART receive register, de-asserts IRQ4
+    movzx eax, al       ; zero-extend: eax = [0x00][0x00][0x00][char]
+    or eax, 0x00000A00  ; set byte 1 to '\n': eax = [0x00][0x00]['\n'][char]
+    push eax            ; stack holds null-terminated string [char, '\n', 0, 0]
     lea eax, [rel uart_message]
     push eax
     call printk
