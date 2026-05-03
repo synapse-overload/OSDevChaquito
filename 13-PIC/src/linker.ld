@@ -12,7 +12,7 @@ ENTRY(_start) /* in x86 32bit assembly this is the real name of the symbol
 		 but from C this would be viewed as start, on x86_64 symbols
 		 keep their own names, but on 32bit there's this quirk, sheesh!
 		 */
-OUTPUT_FORMAT(binary) /* this is a binary format even though we define the 
+OUTPUT_FORMAT(elf32-i386) /* this is a binary format even though we define the 
 			 kernel as ELF */
 SECTIONS
 {

@@ -34,11 +34,21 @@ add_custom_command(
 )
 
 add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kernel.bin
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kernel.elf
     COMMAND_EXPAND_LISTS
-    COMMAND ${CMAKE_C_COMPILER} ${CMAKE_C_FLAGS_LIST} -T ${LINKER_SCRIPT} -o ${CMAKE_CURRENT_BINARY_DIR}/kernel.bin ${CMAKE_CURRENT_BINARY_DIR}/kernelfull.o
+    COMMAND ${CMAKE_C_COMPILER} ${CMAKE_C_FLAGS_LIST} -T ${LINKER_SCRIPT} -o ${CMAKE_CURRENT_BINARY_DIR}/kernel.elf ${CMAKE_CURRENT_BINARY_DIR}/kernelfull.o
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kernelfull.o
-    COMMENT "Linking kernel.bin via linker script"
+    COMMENT "Linking kernel.elf via linker script"
+)
+
+# Need to objcopy out the ELF bytes as the processor just executes instructions
+# and no loader is in place to read the ELF format and load the segments
+# accordingly.
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kernel.bin
+    COMMAND ${CMAKE_OBJCOPY} -O binary ${CMAKE_CURRENT_BINARY_DIR}/kernel.elf ${CMAKE_CURRENT_BINARY_DIR}/kernel.bin
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kernel.elf
+    COMMENT "Extracting raw kernel.bin via objcopy"
 )
 
 add_custom_target(kernel_bin ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kernel.bin)

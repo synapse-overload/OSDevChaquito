@@ -4,9 +4,30 @@ cmake_minimum_required(VERSION 3.10)
 project(ChaquitoOS C ASM_NASM)
 
 # Set additional compiler flags. The base freestanding flags are in the toolchain file.
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -falign-jumps -falign-functions -falign-labels -fomit-frame-pointer -Wno-pointer-to-int-cast -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -O0 -g -std=gnu99")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
+    -falign-jumps \
+    -falign-functions \
+    -falign-labels \
+    -fomit-frame-pointer \
+    -Wno-pointer-to-int-cast \
+    -finline-functions \
+    -Wno-unused-function \
+    -fno-builtin \
+    -Werror \
+    -Wno-unused-label \
+    -Wno-cpp \
+    -Wno-unused-parameter \
+    -nostdlib \
+    -nostartfiles \
+    -nodefaultlibs \
+    -std=gnu99 \
+    -mpreferred-stack-boundary=2 \
+    ")
 
-set(CMAKE_ASM_NASM_FLAGS "-f elf -g")
+set(CMAKE_C_FLAGS_DEBUG          "-O0 -g"  CACHE INTERNAL "")
+set(CMAKE_C_FLAGS_RELEASE        "-O2"     CACHE INTERNAL "")
+set(CMAKE_ASM_NASM_FLAGS_DEBUG   "-g -F dwarf" CACHE INTERNAL "")
+set(CMAKE_ASM_NASM_FLAGS_RELEASE ""        CACHE INTERNAL "")
 
 add_subdirectory(src)
 

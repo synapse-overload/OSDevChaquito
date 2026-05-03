@@ -268,9 +268,9 @@ the `_start` symbol right at that first section that starts after 1MB.
 ```
 doing an objdump on the binary after the 1MB offset gets:
 ```bash
- objdump -D -b binary -m i386 --adjust-vma=0x100000 <path-to-your-build>/kernel.bin | head -35
+ objdump -D -b binary -m i386 --adjust-vma=0x100000 <path-to-your-build>/kernel.elf | head -35
 
-<path-to-your-build>/kernel.bin:     file format binary
+<path-to-your-build>/kernel.elf:     file format binary
 
 
 Disassembly of section .data:
@@ -295,3 +295,27 @@ Disassembly of section start.first:
    4:   8e d8                   mov    %eax,%ds
    6:   8e c0                   mov    %eax,%es
 ```
+
+## Linker script changed output to ELF32-i386
+
+To properly be able to debug the post-link offsets of kernel functions need to
+be known. The previous method generated binary output thus stripping symbol
+locations from the output file, making it a binary blob. That was fine for
+debugging because loading the kernelfull.o into gdb could trigger relocation
+computations at debug time allowing us to stop at functions.
+However at some points we may need to break on the address of a certain
+instruction or just after a function call. For this to be supported we require
+a binary ELF with all the symbols and their locations in memory post-link.
+
+However in order for the kernel to be functional we do still need the binary to
+not have ELF-specific headers and sections at the beginning of the file, so we
+now use objcopy to remove this part and indeed at the end still have a raw
+binary concatenated to the bootloader to provide a raw disk image file.
+
+## New parameter passed to compiler
+
+`-mpreferred-stack-boundary=2` is now passed to the compiler so that stack
+alignment is no longer required for our binary. This would cause extra
+instructions to be generated to align the stack to 16 bytes, which is overkill.
+Since it's a 32-bit operating system 4 bytes are enough, the value of the param
+is meant as a power of 2.

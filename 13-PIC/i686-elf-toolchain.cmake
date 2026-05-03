@@ -23,10 +23,11 @@ set(CMAKE_LINKER ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN_PREFIX}ld)
 set(CMAKE_OBJCOPY ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN_PREFIX}objcopy)
 
 # Add flags for a freestanding environment
-set(CMAKE_C_FLAGS "-ffreestanding -O2 -g -Wall -Wextra" CACHE INTERNAL "")
+set(CMAKE_C_FLAGS   "-ffreestanding -Wall -Wextra" CACHE INTERNAL "")
+set(CMAKE_CXX_FLAGS "-ffreestanding -Wall -Wextra -fno-exceptions -fno-rtti" CACHE INTERNAL "")
 
-# not really going to use C++ right now but it's nice to have it there
-set(CMAKE_CXX_FLAGS "-ffreestanding -O2 -g -Wall -Wextra -fno-exceptions -fno-rtti" CACHE INTERNAL "")
+# Output format is always ELF for this i686 kernel target
+set(CMAKE_ASM_NASM_FLAGS "-f elf" CACHE INTERNAL "")
 
 # Tell CMake to not use the standard system libraries
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)

@@ -31,8 +31,8 @@ enable_interrupts:
 extern printk
 
 section .rodata
-    isr_message db "Interrupt occurred", 0
-    kbd_message db "Keyboard interrupt received", 0
+    isr_message db "Interrupt occurred", 10, 0
+    kbd_message db "Keyboard interrupt received", 10, 0
     uart_message db "UART byte received: ", 0
 
 global isr_generic
@@ -76,13 +76,22 @@ uart_interrupt_handler:
     cli
     pushad
     mov dx, 0x3F8
-    in al, dx            ; drain UART receive register, de-asserts IRQ4
+    in al, dx;          ; drain UART receive register, de-asserts IRQ4
+    movzx eax, al       ; zero-extend the byte to print it as a number
+    mov ebx, 10
+    shl ebx, 8
+    xor eax, ebx
+    push eax            ; save the received byte for printing
     lea eax, [rel uart_message]
     push eax
     call printk
-    add esp, 4
+    pop eax ; clean up the message argument, could've just been an add esp
+    mov eax, esp        ; get the byte argument (still on stack)
+    push eax
+    call printk
+    add esp, 0x08       ; clean up string addr, string byte [2], [1] and [0]
     mov al, 0x20
-    out 0x20, al         ; EOI to Master PIC
+    out 0x20, al        ; EOI to Master PIC
     popad
     iret
 
